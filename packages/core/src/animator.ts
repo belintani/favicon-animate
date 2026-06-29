@@ -94,12 +94,8 @@ export class FaviconAnimator {
    * Set badge
    */
   setBadge(config: BadgeConfig): void {
-    try {
-      this.currentBadge = BadgeRenderer.validateConfig(config);
-      this.updateFaviconDisplay();
-    } catch (error) {
-      console.error('Error setting badge:', error);
-    }
+    this.currentBadge = BadgeRenderer.validateConfig(config);
+    this.updateFaviconDisplay();
   }
 
   /**
