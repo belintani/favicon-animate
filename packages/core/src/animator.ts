@@ -121,7 +121,11 @@ export class FaviconAnimator {
    */
   setBadge(config: BadgeConfig): void {
     this.currentBadge = BadgeRenderer.validateConfig(config);
-    this.updateFaviconDisplay();
+    if (this.animationLoop) {
+      this.animationLoop.setBadge(this.currentBadge);
+    } else {
+      this.updateFaviconDisplay();
+    }
   }
 
   /**
@@ -134,7 +138,11 @@ export class FaviconAnimator {
     }
 
     this.currentBadge.number = number;
-    this.updateFaviconDisplay();
+    if (this.animationLoop) {
+      this.animationLoop.setBadge(this.currentBadge);
+    } else {
+      this.updateFaviconDisplay();
+    }
   }
 
   /**
@@ -142,7 +150,11 @@ export class FaviconAnimator {
    */
   removeBadge(): void {
     this.currentBadge = null;
-    this.updateFaviconDisplay();
+    if (this.animationLoop) {
+      this.animationLoop.setBadge(null);
+    } else {
+      this.updateFaviconDisplay();
+    }
   }
 
   /**

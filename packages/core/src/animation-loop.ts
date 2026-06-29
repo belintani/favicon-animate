@@ -185,6 +185,20 @@ export class AnimationLoop {
   }
 
   /**
+   * Update badge during animation
+   */
+  setBadge(badge: BadgeConfig | null): void {
+    this.badge = badge || null;
+  }
+
+  /**
+   * Get current badge
+   */
+  getBadge(): BadgeConfig | null {
+    return this.badge;
+  }
+
+  /**
    * Get total frames
    */
   getFrameCount(): number {
