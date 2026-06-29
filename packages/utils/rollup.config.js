@@ -12,7 +12,9 @@ export default {
   external: ['favicon-animate'],
   plugins: [
     typescript({
-      tsconfig: './tsconfig.json'
+      tsconfig: './tsconfig.json',
+      declaration: false,
+      declarationMap: false
     })
   ]
 };
