@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>favicon-animate - Vanilla JS Example</title>
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%23007bff' width='32' height='32'/></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      color: #333;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #ff5252;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .status {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .status-value {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .demo-favicon {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>favicon-animate</h1>
+    <p class="subtitle">Dynamic favicon management with badges</p>
+
+    <!-- Badge Section -->
+    <div class="section">
+      <div class="section-title">🎯 Badge Control</div>
+      
+      <div class="input-group">
+        <input type="number" id="badgeInput" placeholder="Enter badge number" value="5" min="0" max="999">
+        <button class="btn-primary" onclick="updateBadge()">Update</button>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-secondary" onclick="setBadgeTopLeft()">Top Left</button>
+        <button class="btn-secondary" onclick="setBadgeTopRight()">Top Right</button>
+        <button class="btn-secondary" onclick="setBadgeBottomLeft()">Bottom Left</button>
+        <button class="btn-secondary" onclick="setBadgeBottomRight()">Bottom Right</button>
+      </div>
+
+      <button class="btn-danger" onclick="removeBadge()" style="width: 100%;">Remove Badge</button>
+    </div>
+
+    <!-- Favicon Section -->
+    <div class="section">
+      <div class="section-title">🎨 Favicon Control</div>
+      
+      <div class="button-group">
+        <button class="btn-primary" onclick="setFaviconBlue()">Blue</button>
+        <button class="btn-primary" onclick="setFaviconRed()">Red</button>
+        <button class="btn-primary" onclick="setFaviconGreen()">Green</button>
+        <button class="btn-primary" onclick="setFaviconPurple()">Purple</button>
+      </div>
+    </div>
+
+    <!-- Status Section -->
+    <div class="section">
+      <div class="section-title">📊 Status</div>
+      
+      <div class="status">
+        <div class="status-item">
+          <span class="status-label">Current Badge:</span>
+          <span class="status-value" id="statusBadge">None</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Badge Position:</span>
+          <span class="status-value" id="statusPosition">-</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Page Visible:</span>
+          <span class="status-value" id="statusVisible">Yes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { FaviconAnimator } from '../../packages/core/dist/index.js';
+
+    let animator = null;
+    let currentBadgePosition = 'top-right';
+
+    // Initialize animator
+    function init() {
+      animator = new FaviconAnimator({
+        favicon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%23667eea" width="32" height="32"/></svg>',
+        pauseOnHidden: true
+      });
+
+      // Set initial badge
+      animator.setBadge({
+        number: 5,
+        position: 'top-right',
+        backgroundColor: '#FF0000',
+        textColor: '#FFFFFF',
+        size: 16,
+        fontSize: 12
+      });
+
+      updateStatus();
+    }
+
+    // Badge functions
+    window.updateBadge = function() {
+      const value = document.getElementById('badgeInput').value;
+      if (value) {
+        animator.updateBadge(parseInt(value));
+        updateStatus();
+      }
+    };
+
+    window.setBadgeTopLeft = function() {
+      currentBadgePosition = 'top-left';
+      updateBadgePosition();
+    };
+
+    window.setBadgeTopRight = function() {
+      currentBadgePosition = 'top-right';
+      updateBadgePosition();
+    };
+
+    window.setBadgeBottomLeft = function() {
+      currentBadgePosition = 'bottom-left';
+      updateBadgePosition();
+    };
+
+    window.setBadgeBottomRight = function() {
+      currentBadgePosition = 'bottom-right';
+      updateBadgePosition();
+    };
+
+    function updateBadgePosition() {
+      const badge = animator.getBadge();
+      if (badge) {
+        badge.position = currentBadgePosition;
+        animator.setBadge(badge);
+        updateStatus();
+      }
+    }
+
+    window.removeBadge = function() {
+      animator.removeBadge();
+      updateStatus();
+    };
+
+    // Favicon functions
+    window.setFaviconBlue = function() {
+      animator.setFavicon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%23667eea" width="32" height="32"/></svg>');
+    };
+
+    window.setFaviconRed = function() {
+      animator.setFavicon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%23ff6b6b" width="32" height="32"/></svg>');
+    };
+
+    window.setFaviconGreen = function() {
+      animator.setFavicon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%2351cf66" width="32" height="32"/></svg>');
+    };
+
+    window.setFaviconPurple = function() {
+      animator.setFavicon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%23a78bfa" width="32" height="32"/></svg>');
+    };
+
+    // Status update
+    function updateStatus() {
+      const badge = animator.getBadge();
+      document.getElementById('statusBadge').textContent = badge ? badge.number : 'None';
+      document.getElementById('statusPosition').textContent = badge ? badge.position : '-';
+      document.getElementById('statusVisible').textContent = document.hidden ? 'No' : 'Yes';
+    }
+
+    // Track visibility changes
+    document.addEventListener('visibilitychange', updateStatus);
+
+    // Initialize on load
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>

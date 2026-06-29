@@ -1,0 +1,48 @@
+{
+  "name": "favicon-animate-monorepo",
+  "version": "0.1.0",
+  "description": "Complete favicon management library with dynamic animations, badges, and multi-format support",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/utils",
+    "website"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "docs": "cd website && pnpm run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "rollup": "^4.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "tslib": "^2.6.0",
+    "vitest": "^1.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "author": "Daniel Belintani <daniel.belintani@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belintani/favicon-animate"
+  },
+  "keywords": [
+    "favicon",
+    "animate",
+    "dynamic",
+    "gif",
+    "webp",
+    "badge",
+    "notification",
+    "icon"
+  ]
+}
