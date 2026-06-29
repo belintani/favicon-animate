@@ -1,6 +1,7 @@
 # favicon-animate
 
 [![npm version](https://img.shields.io/npm/v/favicon-animate.svg)](https://www.npmjs.com/package/favicon-animate)
+[![Tests](https://github.com/belintani/favicon-animate/actions/workflows/ci.yml/badge.svg)](https://github.com/belintani/favicon-animate/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Favicon management library that actually works. Add animations, badges, and dynamic updates to your favicon without the headache.
