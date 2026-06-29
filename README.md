@@ -1,126 +1,143 @@
 # favicon-animate
 
-> Complete favicon management library with dynamic animations, badges, and multi-format support
+Favicon management library that actually works. Add animations, badges, and dynamic updates to your favicon without the headache.
 
 [![npm version](https://img.shields.io/npm/v/favicon-animate.svg)](https://www.npmjs.com/package/favicon-animate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+## Why favicon-animate?
 
-✨ **Dynamic Favicons** - Animate favicons with GIF, WebP, or custom canvas animations  
-🎯 **Badge Support** - Add notification badges with customizable position, color, and styling  
-⚡ **Performance Optimized** - Automatic pause when tab is hidden, minimal CPU usage  
-🎨 **Multiple Formats** - Support for GIF, WebP, PNG, SVG, and ICO formats  
-📦 **Two Versions** - Lightweight core (~8KB) or feature-rich utils (~18KB)  
-🔧 **Easy Integration** - Works with vanilla JS, React, Vue, and any framework  
-♿ **Accessible** - Fallback support for older browsers  
+Your favicon is real estate. Most sites waste it. With favicon-animate, you can show notifications, animations, and status updates right in the browser tab. Users see it before they even click.
 
-## Quick Start
+## What you get
 
-### Installation
+- **Lightweight core** (8KB) - Just the essentials
+- **Feature-rich utils** (18KB) - Canvas animations, themes, presets
+- **Works everywhere** - Vanilla JS, React, Vue, Svelte
+- **No dependencies** - Just import and use
+- **Badge support** - Numbers, colors, positions
+- **Animations** - 7 built-in presets or write your own
+- **Smart performance** - Pauses when tab is hidden
+- **TypeScript ready** - Full type definitions
+
+## Installation
 
 ```bash
-# Core version (lightweight)
+# Core version
 npm install favicon-animate
 
-# With utilities (advanced features)
+# With advanced features
 npm install favicon-animate-utils
 ```
 
-### Basic Usage
+## Quick start
 
 ```javascript
 import { FaviconAnimator } from 'favicon-animate';
 
-// Create animator instance
-const animator = new FaviconAnimator({
-  favicon: '/favicon.png',
-  pauseOnHidden: true
+const favicon = new FaviconAnimator({
+  favicon: '/favicon.png'
 });
 
-// Add a badge
-animator.setBadge({
+// Add a notification badge
+favicon.setBadge({
   number: 5,
-  position: 'top-right',
-  backgroundColor: '#FF0000',
-  textColor: '#FFFFFF'
+  position: 'top-right'
 });
 
-// Update badge number
-animator.updateBadge(10);
+// Update it
+favicon.updateBadge(10);
 
-// Remove badge
-animator.removeBadge();
+// Remove it
+favicon.removeBadge();
 ```
 
-### With GIF Animation
+## Real-world examples
+
+### Chat app with unread count
 
 ```javascript
 import { FaviconAnimator } from 'favicon-animate';
 
-const animator = new FaviconAnimator({
-  favicon: '/animated-favicon.gif'
-});
+const favicon = new FaviconAnimator({ favicon: '/favicon.png' });
 
-// Add badge to animated favicon
-animator.setBadge({
-  number: 3,
-  position: 'bottom-right'
-});
+function onNewMessage() {
+  unreadCount++;
+  favicon.setBadge({
+    number: unreadCount > 99 ? '99+' : unreadCount,
+    position: 'top-right',
+    backgroundColor: '#FF6B6B'
+  });
+}
+
+function onMessagesRead() {
+  unreadCount = 0;
+  favicon.removeBadge();
+}
 ```
 
-## Documentation
+### Animated loading state
 
-- [API Reference](./docs/api.md)
-- [Examples](./docs/examples.md)
-- [Advanced Guide](./docs/guide.md)
+```javascript
+import { CanvasAnimator, getPreset } from 'favicon-animate-utils';
 
-## Examples
+const loader = new CanvasAnimator({
+  frame: getPreset('spinningLoader'),
+  fps: 60
+});
 
-### React
+loader.start();
+// ... do work ...
+loader.stop();
+```
+
+### With React
 
 ```jsx
 import { useEffect, useRef } from 'react';
 import { FaviconAnimator } from 'favicon-animate';
 
-export function App() {
-  const animatorRef = useRef(null);
+export function NotificationBadge() {
+  const faviconRef = useRef(null);
 
   useEffect(() => {
-    animatorRef.current = new FaviconAnimator({
+    faviconRef.current = new FaviconAnimator({
       favicon: '/favicon.png'
     });
 
-    return () => animatorRef.current?.destroy();
+    return () => faviconRef.current?.destroy();
   }, []);
 
-  const handleNotification = (count) => {
-    animatorRef.current?.setBadge({
+  const showNotification = (count) => {
+    faviconRef.current?.setBadge({
       number: count,
       position: 'top-right'
     });
   };
 
   return (
-    <button onClick={() => handleNotification(5)}>
-      Show Badge
+    <button onClick={() => showNotification(5)}>
+      Show notification
     </button>
   );
 }
 ```
 
-### Vue
+### With Vue 3
 
 ```vue
 <template>
-  <button @click="showBadge">Show Badge</button>
+  <button @click="addNotification">
+    Add notification ({{ count }})
+  </button>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { FaviconAnimator } from 'favicon-animate';
 
 const animator = ref(null);
+const count = ref(0);
 
 onMounted(() => {
   animator.value = new FaviconAnimator({
@@ -132,61 +149,149 @@ onUnmounted(() => {
   animator.value?.destroy();
 });
 
-const showBadge = () => {
+const addNotification = () => {
+  count.value++;
   animator.value?.setBadge({
-    number: 5,
+    number: count.value,
     position: 'top-right'
   });
 };
 </script>
 ```
 
-## Badge Configuration
+## Badge options
+
+Position your badge anywhere:
 
 ```javascript
-animator.setBadge({
-  // Required
-  number: 5,                          // Number or string to display
-  position: 'top-right',              // Position: top-left, top-right, bottom-left, bottom-right, center
-
-  // Optional
-  backgroundColor: '#FF0000',         // Badge circle color
-  textColor: '#FFFFFF',               // Number text color
-  size: 16,                           // Badge circle size (px)
-  fontSize: 12,                       // Number font size (px)
-  offset: 2,                          // Distance from edge (px)
-  fontWeight: 'bold',                 // Font weight
-  fontFamily: 'Arial, sans-serif'     // Font family
+favicon.setBadge({
+  number: 5,                      // What to show
+  position: 'top-right',          // top-left, top-right, bottom-left, bottom-right, center
+  backgroundColor: '#FF0000',     // Badge color
+  textColor: '#FFFFFF',           // Number color
+  size: 16,                       // Badge size
+  fontSize: 12,                   // Number size
+  offset: 2                       // Distance from edge
 });
 ```
 
-## Browser Support
+## Animation presets
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome | Latest | ✅ Full |
-| Firefox | Latest | ✅ Full |
-| Safari | Latest | ✅ Full |
-| Edge | Latest | ✅ Full |
-| IE | 11 | ⚠️ Fallback |
+Seven animations ready to use:
+
+```javascript
+import { CanvasAnimator, getPreset } from 'favicon-animate-utils';
+
+const animator = new CanvasAnimator({
+  frame: getPreset('spinningLoader')  // or: pulsing, bouncingDot, rotatingSquare, wave, gradientFade, blinking
+});
+
+animator.start();
+```
+
+## Custom animations
+
+Write your own animation:
+
+```javascript
+import { CanvasAnimator } from 'favicon-animate-utils';
+
+const animator = new CanvasAnimator({
+  frame: (ctx, progress) => {
+    // progress goes from 0 to 1
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 32, 32);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(16, 16, 8 * progress, 0, Math.PI * 2);
+    ctx.fill();
+  },
+  fps: 60
+});
+
+animator.start();
+```
+
+## Theme support
+
+Automatically switch between light and dark favicons:
+
+```javascript
+import { ThemeManager } from 'favicon-animate-utils';
+import { FaviconAnimator } from 'favicon-animate';
+
+const themes = new ThemeManager();
+const favicon = new FaviconAnimator();
+
+themes.registerTheme('default', {
+  light: '/favicon-light.png',
+  dark: '/favicon-dark.png'
+});
+
+themes.on('theme-change', (theme) => {
+  const url = themes.getFaviconUrl({
+    light: '/favicon-light.png',
+    dark: '/favicon-dark.png'
+  });
+  favicon.setFavicon(url);
+});
+
+themes.setTheme('auto'); // auto, light, or dark
+```
 
 ## Performance
 
-- **Automatic pause** when tab is not visible (Page Visibility API)
-- **Minimal CPU usage** - only updates when needed
-- **Optimized rendering** - efficient canvas operations
-- **Small bundle size** - core is only ~8KB gzipped
+The library is built for performance:
 
-## License
+- Automatically pauses animations when your tab isn't visible
+- Minimal CPU usage even with multiple animations
+- Efficient canvas rendering
+- Small bundle size
 
-MIT © [Daniel Belintani](https://github.com/belintani)
+## Browser support
+
+| Browser | Support |
+|---------|---------|
+| Chrome | Latest |
+| Firefox | Latest |
+| Safari | Latest |
+| Edge | Latest |
+| IE 11 | Fallback |
+
+## Documentation
+
+- [API Reference](./docs/api.md) - Complete method documentation
+- [Examples](./docs/examples.md) - Real-world use cases
+- [Advanced Guide](./docs/guide.md) - Deep dives and patterns
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Run tests
+pnpm test
+
+# Format code
+pnpm format
+
+# Lint
+pnpm lint
+```
 
 ## Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) for details.
+We welcome contributions. See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
-## Support
+## License
 
-- 📖 [Documentation](./docs)
-- 💬 [GitHub Discussions](https://github.com/belintani/favicon-animate/discussions)
-- 🐛 [Report Issues](https://github.com/belintani/favicon-animate/issues)
+MIT - Use it however you want.
+
+---
+
+Made by [Daniel Belintani](https://github.com/belintani)
