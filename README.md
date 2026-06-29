@@ -1,9 +1,14 @@
 # favicon-animate
 
-Favicon management library that actually works. Add animations, badges, and dynamic updates to your favicon without the headache.
-
+<!-- BADGES START -->
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/belintani/favicon-animate/actions)
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/belintani/favicon-animate/actions)
+[![Node](https://img.shields.io/badge/node-%3E%3D%2016-brightgreen)](https://nodejs.org)
 [![npm version](https://img.shields.io/npm/v/favicon-animate.svg)](https://www.npmjs.com/package/favicon-animate)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- BADGES END -->
+
+Favicon management library that actually works. Add animations, badges, and dynamic updates to your favicon without the headache.
 
 ## Why favicon-animate?
 
