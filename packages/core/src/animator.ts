@@ -169,7 +169,7 @@ export class FaviconAnimator {
         faviconSize: this.faviconSize,
         badge: this.currentBadge,
         loopCount,
-        onFrameChange: (frameIndex) => {
+        onFrameChange: (_frameIndex) => {
           this.updateAnimationFrame();
         },
         onAnimationEnd: () => {

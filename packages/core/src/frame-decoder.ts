@@ -3,7 +3,7 @@
  * with fallback to img+drawImage for unsupported browsers
  */
 
-import { isSameOrigin, logCorsWarning } from './cors-handler';
+import { logCorsWarning } from './cors-handler';
 
 export interface DecodedFrame {
   bitmap: ImageBitmap;
@@ -19,6 +19,7 @@ export interface FrameDecoderOptions {
  * Check if ImageDecoder is available
  */
 export function hasImageDecoder(): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return typeof (globalThis as any).ImageDecoder !== 'undefined';
 }
 
@@ -68,6 +69,7 @@ async function decodeWithImageDecoder(
   contentType: string,
   onProgress?: (current: number, total: number) => void
 ): Promise<DecodedFrame[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ImageDecoderClass = (globalThis as any).ImageDecoder;
 
   if (!ImageDecoderClass) {
