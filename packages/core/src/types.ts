@@ -19,8 +19,6 @@ export interface BadgeConfig {
   size?: number;
   /** Font size of the badge number */
   fontSize?: number;
-  /** Border radius (usually '50%' for circle) */
-  borderRadius?: string;
   /** Offset from the edge in pixels */
   offset?: number;
   /** Font weight */

@@ -1,2 +1,6 @@
+packages:
+  - 'packages/*'
+  - 'website'
+
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: false

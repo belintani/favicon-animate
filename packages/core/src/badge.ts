@@ -47,7 +47,6 @@ export class BadgeRenderer {
       textColor = '#FFFFFF',
       size = 16,
       fontSize = 12,
-      borderRadius = '50%',
       offset = 2,
       fontWeight = 'bold',
       fontFamily = 'Arial, sans-serif'
@@ -83,7 +82,6 @@ export class BadgeRenderer {
       textColor = '#FFFFFF',
       size = 16,
       fontSize = 12,
-      borderRadius = '50%',
       offset = 2,
       fontWeight = 'bold',
       fontFamily = 'Arial, sans-serif'
@@ -113,7 +111,6 @@ export class BadgeRenderer {
       textColor,
       size: Math.max(8, size),
       fontSize: Math.max(6, fontSize),
-      borderRadius,
       offset: Math.max(0, offset),
       fontWeight,
       fontFamily

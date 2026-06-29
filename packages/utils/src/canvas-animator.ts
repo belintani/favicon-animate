@@ -154,7 +154,7 @@ export class CanvasAnimator {
     const elapsed = now - this.startTime;
 
     // Calculate progress (0 to 1)
-    let progress = this.duration > 0 ? (elapsed % this.duration) / this.duration : (elapsed % 1000) / 1000;
+    const progress = this.duration > 0 ? (elapsed % this.duration) / this.duration : (elapsed % 1000) / 1000;
 
     // Clear canvas
     this.ctx.clearRect(0, 0, this.size, this.size);
