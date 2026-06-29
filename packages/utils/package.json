@@ -1,6 +1,6 @@
 {
   "name": "favicon-animate-utils",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Advanced utilities for favicon-animate: GIF/WebP parsing, canvas animations, events, themes",
   "type": "module",
   "main": "./dist/index.js",
