@@ -1,13 +1,16 @@
 import { AnimatorOptions, BadgeConfig, FaviconConfig, FaviconData } from './types';
 import { BadgeRenderer } from './badge';
 import { getVisibilityManager } from './visibility';
+import { decodeImageFrames, releaseFrames, DecodedFrame } from './frame-decoder';
+import { AnimationLoop } from './animation-loop';
 import {
   getFaviconLink,
   createCanvas,
   loadImage,
   detectImageFormat,
   canvasToDataUrl,
-  isBrowser
+  isBrowser,
+  normalizeLinks
 } from './utils';
 
 /**
@@ -23,6 +26,10 @@ export class FaviconAnimator {
   private unsubscribeVisibility: (() => void) | null = null;
   private faviconSize: number = 32;
   private updateInterval: number = 100;
+  private enableAnimation: boolean = true;
+  private animationLoop: AnimationLoop | null = null;
+  private decodedFrames: DecodedFrame[] = [];
+  private animationFrameId: number | null = null;
 
   constructor(options: AnimatorOptions = {}) {
     if (!isBrowser()) {
@@ -32,6 +39,10 @@ export class FaviconAnimator {
     this.faviconLink = getFaviconLink();
     this.pauseOnHidden = options.pauseOnHidden !== false;
     this.updateInterval = options.updateInterval || 100;
+    this.enableAnimation = options.enableAnimation !== false;
+    
+    // Normalize favicon links (remove duplicates)
+    normalizeLinks();
 
     // Setup visibility manager
     if (this.pauseOnHidden) {
@@ -68,23 +79,38 @@ export class FaviconAnimator {
       ? { url: config }
       : config;
 
-    const { url, size = 32 } = faviconConfig;
+    const { url, size = 32, animate = true, corsMode = 'cors', loopCount = 0 } = faviconConfig;
     this.faviconSize = size;
 
     try {
+      // Stop any existing animation
+      this.stopAnimation();
+
       // Detect format
       const format = detectImageFormat(url);
+      const isAnimated = format === 'gif' || format === 'webp';
 
       // Create favicon data
       this.currentFavicon = {
         url,
         size,
-        isAnimated: format === 'gif' || format === 'webp',
+        isAnimated,
         format
       };
 
-      // Update favicon link
-      await this.updateFaviconDisplay();
+      // Try to decode and animate if enabled
+      if (isAnimated && animate && this.enableAnimation) {
+        try {
+          await this.startAnimation(url, corsMode, loopCount);
+        } catch (error) {
+          console.warn('Animation failed, falling back to static image:', error);
+          // Fallback to static image
+          await this.updateFaviconDisplay();
+        }
+      } else {
+        // Static favicon
+        await this.updateFaviconDisplay();
+      }
     } catch (error) {
       console.error('Error setting favicon:', error);
     }
@@ -117,6 +143,86 @@ export class FaviconAnimator {
   removeBadge(): void {
     this.currentBadge = null;
     this.updateFaviconDisplay();
+  }
+
+  /**
+   * Start animation for GIF/WebP
+   */
+  private async startAnimation(
+    url: string,
+    corsMode: 'cors' | 'no-cors' | 'same-origin',
+    loopCount: number
+  ): Promise<void> {
+    try {
+      // Decode frames
+      this.decodedFrames = await decodeImageFrames(url, { corsMode });
+
+      if (this.decodedFrames.length <= 1) {
+        // Not animated or single frame
+        await this.updateFaviconDisplay();
+        return;
+      }
+
+      // Create animation loop
+      this.animationLoop = new AnimationLoop({
+        frames: this.decodedFrames,
+        faviconSize: this.faviconSize,
+        badge: this.currentBadge,
+        loopCount,
+        onFrameChange: (frameIndex) => {
+          this.updateAnimationFrame();
+        },
+        onAnimationEnd: () => {
+          this.isAnimating = false;
+        }
+      });
+
+      // Start animation if visible
+      if (this.isVisible) {
+        this.animationLoop.play();
+        this.isAnimating = true;
+        this.updateAnimationFrame();
+      }
+    } catch (error) {
+      console.error('Failed to start animation:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Stop animation and cleanup
+   */
+  private stopAnimation(): void {
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    if (this.animationLoop) {
+      this.animationLoop.destroy();
+      this.animationLoop = null;
+    }
+
+    if (this.decodedFrames.length > 0) {
+      releaseFrames(this.decodedFrames);
+      this.decodedFrames = [];
+    }
+
+    this.isAnimating = false;
+  }
+
+  /**
+   * Update animation frame on favicon
+   */
+  private updateAnimationFrame(): void {
+    if (!this.animationLoop) return;
+
+    try {
+      const dataUrl = this.animationLoop.getCurrentFrameDataUrl();
+      this.faviconLink.href = dataUrl;
+    } catch (error) {
+      console.error('Error updating animation frame:', error);
+    }
   }
 
   /**
@@ -159,6 +265,9 @@ export class FaviconAnimator {
    * Pause animation
    */
   pause(): void {
+    if (this.animationLoop) {
+      this.animationLoop.pause();
+    }
     this.isAnimating = false;
   }
 
@@ -166,7 +275,8 @@ export class FaviconAnimator {
    * Resume animation
    */
   resume(): void {
-    if (this.isVisible) {
+    if (this.isVisible && this.animationLoop) {
+      this.animationLoop.resume();
       this.isAnimating = true;
     }
   }
@@ -196,6 +306,7 @@ export class FaviconAnimator {
    * Cleanup
    */
   destroy(): void {
+    this.stopAnimation();
     this.pause();
     if (this.unsubscribeVisibility) {
       this.unsubscribeVisibility();

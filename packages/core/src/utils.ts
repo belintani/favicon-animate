@@ -120,3 +120,23 @@ export function canvasToDataUrl(canvas: HTMLCanvasElement): string {
 export function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
+
+/**
+ * Normalize favicon links by removing duplicates
+ * Keeps only one canonical favicon link
+ */
+export function normalizeLinks(): void {
+  const links = document.querySelectorAll('link[rel~="icon"]');
+  if (links.length <= 1) return;
+
+  // Keep the first link, remove others
+  let kept = false;
+  links.forEach((link: Element) => {
+    const linkEl = link as HTMLLinkElement;
+    if (!kept && !linkEl.href.startsWith('data:')) {
+      kept = true;
+    } else if (kept || linkEl.href.startsWith('data:')) {
+      link.remove();
+    }
+  });
+}

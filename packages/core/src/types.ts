@@ -37,6 +37,12 @@ export interface FaviconConfig {
   size?: number;
   /** Whether to use the favicon as-is or process it */
   raw?: boolean;
+  /** Enable animation for GIF/WebP (default: true for animated images) */
+  animate?: boolean;
+  /** CORS mode for fetching animated images (default: 'cors') */
+  corsMode?: 'cors' | 'no-cors' | 'same-origin';
+  /** Loop count for animation (0 = infinite, >0 = finite) */
+  loopCount?: number;
 }
 
 /**
@@ -53,6 +59,8 @@ export interface AnimatorOptions {
   updateInterval?: number;
   /** Custom favicon link element selector */
   linkSelector?: string;
+  /** Enable animation for GIF/WebP by default */
+  enableAnimation?: boolean;
 }
 
 /**
