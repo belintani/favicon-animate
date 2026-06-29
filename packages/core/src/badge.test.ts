@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { BadgeRenderer } from './badge';
-import { BadgeConfig } from './types';
+import { BadgeConfig, BadgePosition } from './types';
 
 describe('BadgeRenderer', () => {
   describe('calculatePosition', () => {
@@ -63,7 +63,7 @@ describe('BadgeRenderer', () => {
       expect(() => {
         BadgeRenderer.validateConfig({
           number: 5,
-          position: 'invalid' as any
+          position: 'invalid' as unknown as BadgePosition
         });
       }).toThrow();
     });

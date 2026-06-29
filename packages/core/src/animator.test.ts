@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { FaviconAnimator } from './animator';
+import { BadgePosition } from './types';
 
 describe('FaviconAnimator', () => {
   let animator: FaviconAnimator;
@@ -84,7 +85,7 @@ describe('FaviconAnimator', () => {
       expect(() => {
         animator.setBadge({
           number: 5,
-          position: 'invalid' as any
+          position: 'invalid' as unknown as BadgePosition
         });
       }).toThrow();
     });
