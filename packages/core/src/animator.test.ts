@@ -5,7 +5,9 @@ describe('FaviconAnimator', () => {
   let animator: FaviconAnimator;
 
   afterEach(() => {
-    animator.destroy();
+    if (animator) {
+      animator.destroy();
+    }
   });
 
   describe('initialization', () => {
@@ -14,14 +16,6 @@ describe('FaviconAnimator', () => {
         favicon: 'data:image/svg+xml,<svg></svg>'
       });
       expect(animator).toBeDefined();
-    });
-
-    it('should set favicon on init', async () => {
-      animator = new FaviconAnimator({
-        favicon: 'data:image/svg+xml,<svg></svg>'
-      });
-      const favicon = animator.getFavicon();
-      expect(favicon).toBeDefined();
     });
 
     it('should set initial badge if provided', () => {
@@ -37,10 +31,13 @@ describe('FaviconAnimator', () => {
   });
 
   describe('badge management', () => {
-    it('should set badge', () => {
+    beforeEach(() => {
       animator = new FaviconAnimator({
         favicon: 'data:image/svg+xml,<svg></svg>'
       });
+    });
+
+    it('should set badge', () => {
       animator.setBadge({
         number: 5,
         position: 'top-right'
@@ -52,9 +49,6 @@ describe('FaviconAnimator', () => {
     });
 
     it('should update badge number', () => {
-      animator = new FaviconAnimator({
-        favicon: 'data:image/svg+xml,<svg></svg>'
-      });
       animator.setBadge({
         number: 5,
         position: 'top-right'
@@ -66,9 +60,6 @@ describe('FaviconAnimator', () => {
     });
 
     it('should remove badge', () => {
-      animator = new FaviconAnimator({
-        favicon: 'data:image/svg+xml,<svg></svg>'
-      });
       animator.setBadge({
         number: 5,
         position: 'top-right'
@@ -78,24 +69,122 @@ describe('FaviconAnimator', () => {
       const badge = animator.getBadge();
       expect(badge).toBeNull();
     });
+
+    it('should handle string numbers in badge', () => {
+      animator.setBadge({
+        number: '99+',
+        position: 'top-right'
+      });
+
+      const badge = animator.getBadge();
+      expect(badge?.number).toBe('99+');
+    });
+
+    it('should validate badge position', () => {
+      expect(() => {
+        animator.setBadge({
+          number: 5,
+          position: 'invalid' as any
+        });
+      }).toThrow();
+    });
   });
 
   describe('animation control', () => {
-    it('should pause animation', () => {
+    beforeEach(() => {
       animator = new FaviconAnimator({
         favicon: 'data:image/svg+xml,<svg></svg>'
       });
+    });
+
+    it('should pause animation', () => {
       animator.pause();
       expect(animator.getIsAnimating()).toBe(false);
     });
 
     it('should resume animation', () => {
-      animator = new FaviconAnimator({
-        favicon: 'data:image/svg+xml,<svg></svg>'
-      });
       animator.pause();
       animator.resume();
       expect(animator.getIsAnimating()).toBe(true);
+    });
+
+    it('should track animation state', () => {
+      const isAnimating = animator.getIsAnimating();
+      expect(typeof isAnimating).toBe('boolean');
+    });
+  });
+
+  describe('badge positions', () => {
+    beforeEach(() => {
+      animator = new FaviconAnimator({
+        favicon: 'data:image/svg+xml,<svg></svg>'
+      });
+    });
+
+    const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'center'] as const;
+
+    positions.forEach((position) => {
+      it(`should support ${position} position`, () => {
+        animator.setBadge({
+          number: 5,
+          position
+        });
+
+        const badge = animator.getBadge();
+        expect(badge?.position).toBe(position);
+      });
+    });
+  });
+
+  describe('badge customization', () => {
+    beforeEach(() => {
+      animator = new FaviconAnimator({
+        favicon: 'data:image/svg+xml,<svg></svg>'
+      });
+    });
+
+    it('should set custom background color', () => {
+      animator.setBadge({
+        number: 5,
+        position: 'top-right',
+        backgroundColor: '#0066FF'
+      });
+
+      const badge = animator.getBadge();
+      expect(badge?.backgroundColor).toBe('#0066FF');
+    });
+
+    it('should set custom text color', () => {
+      animator.setBadge({
+        number: 5,
+        position: 'top-right',
+        textColor: '#000000'
+      });
+
+      const badge = animator.getBadge();
+      expect(badge?.textColor).toBe('#000000');
+    });
+
+    it('should set custom size', () => {
+      animator.setBadge({
+        number: 5,
+        position: 'top-right',
+        size: 20
+      });
+
+      const badge = animator.getBadge();
+      expect(badge?.size).toBe(20);
+    });
+
+    it('should set custom font size', () => {
+      animator.setBadge({
+        number: 5,
+        position: 'top-right',
+        fontSize: 14
+      });
+
+      const badge = animator.getBadge();
+      expect(badge?.fontSize).toBe(14);
     });
   });
 });

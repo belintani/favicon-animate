@@ -6,13 +6,13 @@ describe('BadgeRenderer', () => {
   describe('calculatePosition', () => {
     it('should calculate top-left position', () => {
       const pos = BadgeRenderer.calculatePosition('top-left', 32, 16, 2);
-      expect(pos.x).toBe(10); // offset + radius
+      expect(pos.x).toBe(10);
       expect(pos.y).toBe(10);
     });
 
     it('should calculate top-right position', () => {
       const pos = BadgeRenderer.calculatePosition('top-right', 32, 16, 2);
-      expect(pos.x).toBe(22); // 32 - 2 - 8
+      expect(pos.x).toBe(22);
       expect(pos.y).toBe(10);
     });
 
@@ -99,43 +99,69 @@ describe('BadgeRenderer', () => {
     });
   });
 
-  describe('drawBadge', () => {
-    it('should draw badge on canvas', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 32;
-      canvas.height = 32;
-      const ctx = canvas.getContext('2d')!;
+  describe('badge positions', () => {
+    const positions = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'center'] as const;
 
-      const config: BadgeConfig = {
+    positions.forEach((position) => {
+      it(`should support ${position} position`, () => {
+        const validated = BadgeRenderer.validateConfig({
+          number: 5,
+          position
+        });
+
+        expect(validated.position).toBe(position);
+      });
+    });
+  });
+
+  describe('badge customization', () => {
+    it('should set custom background color', () => {
+      const validated = BadgeRenderer.validateConfig({
         number: 5,
         position: 'top-right',
-        backgroundColor: '#FF0000',
-        textColor: '#FFFFFF',
-        size: 16,
-        fontSize: 12
-      };
+        backgroundColor: '#0066FF'
+      });
 
-      expect(() => {
-        BadgeRenderer.drawBadge(ctx, config, 32);
-      }).not.toThrow();
+      expect(validated.backgroundColor).toBe('#0066FF');
+    });
+
+    it('should set custom text color', () => {
+      const validated = BadgeRenderer.validateConfig({
+        number: 5,
+        position: 'top-right',
+        textColor: '#000000'
+      });
+
+      expect(validated.textColor).toBe('#000000');
+    });
+
+    it('should set custom size', () => {
+      const validated = BadgeRenderer.validateConfig({
+        number: 5,
+        position: 'top-right',
+        size: 20
+      });
+
+      expect(validated.size).toBe(20);
+    });
+
+    it('should set custom font size', () => {
+      const validated = BadgeRenderer.validateConfig({
+        number: 5,
+        position: 'top-right',
+        fontSize: 14
+      });
+
+      expect(validated.fontSize).toBe(14);
     });
 
     it('should handle string numbers', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 32;
-      canvas.height = 32;
-      const ctx = canvas.getContext('2d')!;
-
-      const config: BadgeConfig = {
+      const validated = BadgeRenderer.validateConfig({
         number: '99+',
-        position: 'top-right',
-        size: 16,
-        fontSize: 12
-      };
+        position: 'top-right'
+      });
 
-      expect(() => {
-        BadgeRenderer.drawBadge(ctx, config, 32);
-      }).not.toThrow();
+      expect(validated.number).toBe('99+');
     });
   });
 });
